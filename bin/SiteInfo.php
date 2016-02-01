@@ -3,6 +3,7 @@
 include_once __DIR__ . "/../vendor/autoload.php";
 
 if (count($argv) < 5) {
+    echo "\n  SiteInfo - Version ##development##\n";
     die("\n  Usage: SiteInfo.phar url system api_key options <koalamon_server>\n\n");
 }
 
@@ -85,4 +86,4 @@ if ($totalSizeInMb > $maxPageSize) {
 }
 
 $bigFileEvent = new \Koalamon\Client\Reporter\Event('SiteInfo_FileSize_' . $url, $system, $status, 'SiteInfoFileSize', $message, $totalSizeInMb);
-$koalamonReporter->send($bigFileEvent);
+$koalamonReporter->sendEvent($bigFileEvent);
