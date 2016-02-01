@@ -1,0 +1,7 @@
+{
+  "require": {
+    "koalamon/koalamonclient": "dev-master",
+    "guzzlehttp/guzzle": "~6.0.0",
+    "phmlabs/html": "~1.1.0"
+  }
+}
