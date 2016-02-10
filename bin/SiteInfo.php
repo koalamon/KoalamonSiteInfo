@@ -79,7 +79,7 @@ $totalSizeInMb = round($totalSize / 1024 / 1024, 2);
 
 if ($totalSizeInMb > $maxPageSize) {
     $status = \Koalamon\Client\Reporter\Event::STATUS_FAILURE;
-    $message = "Total size of the site " . $url . "is " . $totalSizeInMb . "MB.";
+    $message = "Total size of the site " . $url . " is " . $totalSizeInMb . "MB.";
 } else {
     $status = \Koalamon\Client\Reporter\Event::STATUS_SUCCESS;
     $message = "";
