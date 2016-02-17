@@ -47,7 +47,8 @@ $bigFiles = 0;
 
 $knownBigFiles = array("http://www.cosmopolitan.de/bilder/300x150/2015/04/17/72971-exchange-kostenlos.gif?itok=6bxlNQgC",
     "http://www.billigflieger.de/build/js/app.js",
-    "http://stars-und-stories.com/wp-content/plugins/js_composer/assets/css/js_composer.min.css?ver=4.8.0.1");
+    "http://stars-und-stories.com/wp-content/plugins/js_composer/assets/css/js_composer.min.css?ver=4.8.0.1",
+    "http://stage.lecker.de/sites/all/themes/lecker/js/angular.package.js");
 
 foreach ($dependencies as $dependency) {
     try {
@@ -55,8 +56,17 @@ foreach ($dependencies as $dependency) {
         $responseSize = strlen($response->getBody());
         $totalSize += $responseSize;
 
-        if (!in_array((string)$dependency, $knownBigFiles)) {
+        $known = false;
+        foreach ($knownBigFiles as $knownBigFile) {
+            if (preg_match("^" . preg_quote($knownBigFile) . "^", (string)$dependency) > 0) {
+                $known = true;
+                continue;
+            }
+        }
+
+        if (!$known) {
             if ($responseSize > ($maxFileSize * 1024)) {
+                var_dump((string)$dependency);
                 $bigFiles++;
             }
         }
