@@ -13,6 +13,12 @@ $projectApiKey = $argv[3];
 
 $options = json_decode($argv[4]);
 
+$knownBigFiles = array("http://www.cosmopolitan.de/bilder/300x150/2015/04/17/72971-exchange-kostenlos.gif?itok=6bxlNQgC",
+    "http://www.billigflieger.de/build/js/app.js",
+    "http://stars-und-stories.com/wp-content/plugins/js_composer/assets/css/js_composer.min.css?ver=4.8.0.1",
+    "http://stage.lecker.de/sites/all/themes/lecker/js/angular.package.js");
+
+
 if (!is_null($options) && $options !== false) {
     if (property_exists($options, 'pageSize')) {
         $maxPageSize = $options->pageSize;
@@ -24,6 +30,12 @@ if (!is_null($options) && $options !== false) {
         $maxFileSize = $options->fileSize;
     } else {
         $maxFileSize = 100000000;
+    }
+
+    if (property_exists($options, 'excludedFiles')) {
+        foreach($options->excludedFiles as $excludedFile) {
+            $knownBigFiles[] = $excludedFile->filename;
+        }
     }
 }
 
@@ -44,11 +56,6 @@ $dependencies = $document->getDependencies(new \GuzzleHttp\Psr7\Uri($url), false
 
 $totalSize = 0;
 $bigFiles = 0;
-
-$knownBigFiles = array("http://www.cosmopolitan.de/bilder/300x150/2015/04/17/72971-exchange-kostenlos.gif?itok=6bxlNQgC",
-    "http://www.billigflieger.de/build/js/app.js",
-    "http://stars-und-stories.com/wp-content/plugins/js_composer/assets/css/js_composer.min.css?ver=4.8.0.1",
-    "http://stage.lecker.de/sites/all/themes/lecker/js/angular.package.js");
 
 foreach ($dependencies as $dependency) {
     try {
