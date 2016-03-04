@@ -18,6 +18,7 @@ $knownBigFiles = array("http://www.cosmopolitan.de/bilder/300x150/2015/04/17/729
     "http://stars-und-stories.com/wp-content/plugins/js_composer/assets/css/js_composer.min.css?ver=4.8.0.1",
     "http://stage.lecker.de/sites/all/themes/lecker/js/angular.package.js");
 
+$maxFileSize = 100000000;
 
 if (!is_null($options) && $options !== false) {
     if (property_exists($options, 'pageSize')) {
@@ -28,12 +29,10 @@ if (!is_null($options) && $options !== false) {
 
     if (property_exists($options, 'fileSize')) {
         $maxFileSize = $options->fileSize;
-    } else {
-        $maxFileSize = 100000000;
     }
 
     if (property_exists($options, 'excludedFiles')) {
-        foreach($options->excludedFiles as $excludedFile) {
+        foreach ($options->excludedFiles as $excludedFile) {
             $knownBigFiles[] = $excludedFile->filename;
         }
     }
@@ -57,6 +56,8 @@ $dependencies = $document->getDependencies(new \GuzzleHttp\Psr7\Uri($url), false
 $totalSize = 0;
 $bigFiles = 0;
 
+$bigFileNames = [];
+
 foreach ($dependencies as $dependency) {
     try {
         $response = $guzzle->request('GET', (string)$dependency);
@@ -74,6 +75,7 @@ foreach ($dependencies as $dependency) {
         if (!$known) {
             if ($responseSize > ($maxFileSize * 1024)) {
                 var_dump((string)$dependency);
+                $bigFileNames[] = ['file' => $dependency, 'size' => $responseSize];
                 $bigFiles++;
             }
         }
@@ -83,7 +85,11 @@ foreach ($dependencies as $dependency) {
 
 if ($bigFiles > 0) {
     $status = \Koalamon\Client\Reporter\Event::STATUS_FAILURE;
-    $message = "Too many big files (>" . $maxFileSize . " KB) on " . $url . " found.";
+    $message = "Too many big files (>" . $maxFileSize . " KB) on " . $url . " found. <ul>";
+    foreach ($bigFileNames as $bigFileName) {
+        $message .= "<li>File: " . $bigFileName['file'] . ", size: " . round($bigFileName['size'] / 1024) . " KB</li>";
+    }
+    $message .= "</ul>";
 } else {
     $status = \Koalamon\Client\Reporter\Event::STATUS_SUCCESS;
     $message = "No big files (>" . $maxFileSize . " KB) found.";
