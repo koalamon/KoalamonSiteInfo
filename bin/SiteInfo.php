@@ -13,9 +13,9 @@ $projectApiKey = $argv[3];
 
 $options = json_decode($argv[4]);
 
-$knownBigFiles = array("http://www.cosmopolitan.de/bilder/300x150/2015/04/17/72971-exchange-kostenlos.gif?itok=6bxlNQgC",
+$knownBigFiles = array("http://www.cosmopolitan.de/bilder/300x150/2015/04/17/72971-exchange-kostenlos.gif\?itok=6bxlNQgC",
     "http://www.billigflieger.de/build/js/app.js",
-    "http://stars-und-stories.com/wp-content/plugins/js_composer/assets/css/js_composer.min.css?ver=4.8.0.1",
+    "http://stars-und-stories.com/wp-content/plugins/js_composer/assets/css/js_composer.min.css\?ver=4.8.0.1",
     "http://stage.lecker.de/sites/all/themes/lecker/js/angular.package.js");
 
 $maxFileSize = 100000000;
@@ -66,7 +66,7 @@ foreach ($dependencies as $dependency) {
 
         $known = false;
         foreach ($knownBigFiles as $knownBigFile) {
-            if (preg_match("^" . preg_quote($knownBigFile) . "^", (string)$dependency) > 0) {
+            if (preg_match("^" . $knownBigFile . "^", (string)$dependency) > 0) {
                 $known = true;
                 continue;
             }
