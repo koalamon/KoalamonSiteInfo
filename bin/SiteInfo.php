@@ -92,7 +92,7 @@ if ($bigFiles > 0) {
     $message .= "</ul>";
 } else {
     $status = \Koalamon\Client\Reporter\Event::STATUS_SUCCESS;
-    $message = "No big files (>" . $maxFileSize . " KB) found.";
+    $message = "No big files (>" . $maxFileSize . " KB) found. Checked " .count($dependencies) . " files.";
 }
 
 $bigFileEvent = new \Koalamon\Client\Reporter\Event('SiteInfo_BigFiles_' . $url, $system, $status, 'SiteInfoBigFile', $message, $bigFiles);
@@ -102,11 +102,10 @@ $totalSizeInMb = round($totalSize / 1024 / 1024, 2);
 
 if ($totalSizeInMb > $maxPageSize) {
     $status = \Koalamon\Client\Reporter\Event::STATUS_FAILURE;
-    $message = "Total size of the site " . $url . " is " . $totalSizeInMb . "MB.";
 } else {
     $status = \Koalamon\Client\Reporter\Event::STATUS_SUCCESS;
-    $message = "";
 }
+$message = "Total size of the site " . $url . " is " . $totalSizeInMb . "MB.";
 
 $bigFileEvent = new \Koalamon\Client\Reporter\Event('SiteInfo_FileSize_' . $url, $system, $status, 'SiteInfoFileSize', $message, $totalSizeInMb);
 $koalamonReporter->sendEvent($bigFileEvent);
