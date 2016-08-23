@@ -71,7 +71,7 @@ foreach ($dependencies as $dependency) {
 
         if (!$known) {
             if ($responseSize > ($maxFileSize * 1024)) {
-                echo "\nBig file found: "((string)$dependency) . "\n";
+                echo "\nBig file found: " . ((string)$dependency) . "\n";
                 $bigFileNames[] = ['file' => $dependency, 'size' => $responseSize];
                 $bigFiles++;
             }
