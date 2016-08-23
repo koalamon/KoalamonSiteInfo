@@ -1,5 +1,7 @@
 <?php
 
+//  /usr/bin/php /var/tools/KoalaSiteInfo/SiteInfo.phar 'http://www.aboutyou.de/dein-profil' AY-Live 4B288DE3-A40F-4CA7-B18E-F49361A26AF2 '{"pageSize":"3","fileSize":"800","excludedFiles":{"89576813":{"filename":"http:\/\/www.aboutyou.de\/assets\/js\/theme-v3.min.js(.*)"},"28771459":{"filename":" http:\/\/www.aboutyou.de\/assets\/css\/theme-v3.css(.*)"}}}' http://status.leankoala.com/webhook/
+
 include_once __DIR__ . "/../vendor/autoload.php";
 
 if (count($argv) < 5) {
@@ -13,18 +15,13 @@ $projectApiKey = $argv[3];
 
 $options = json_decode($argv[4]);
 
-$knownBigFiles = array("http://www.cosmopolitan.de/bilder/300x150/2015/04/17/72971-exchange-kostenlos.gif\?itok=6bxlNQgC",
-    "http://www.billigflieger.de/build/js/app.js",
-    "http://stars-und-stories.com/wp-content/plugins/js_composer/assets/css/js_composer.min.css\?ver=4.8.0.1",
-    "http://stage.lecker.de/sites/all/themes/lecker/js/angular.package.js");
-
+$knownBigFiles = [];
 $maxFileSize = 100000000;
+$maxPageSize = 100000;
 
 if (!is_null($options) && $options !== false) {
     if (property_exists($options, 'pageSize')) {
         $maxPageSize = $options->pageSize;
-    } else {
-        $maxPageSize = 100000;
     }
 
     if (property_exists($options, 'fileSize')) {
@@ -74,7 +71,7 @@ foreach ($dependencies as $dependency) {
 
         if (!$known) {
             if ($responseSize > ($maxFileSize * 1024)) {
-                var_dump((string)$dependency);
+                echo "\nBig file found: "((string)$dependency) . "\n";
                 $bigFileNames[] = ['file' => $dependency, 'size' => $responseSize];
                 $bigFiles++;
             }
@@ -92,7 +89,7 @@ if ($bigFiles > 0) {
     $message .= "</ul>";
 } else {
     $status = \Koalamon\Client\Reporter\Event::STATUS_SUCCESS;
-    $message = "No big files (>" . $maxFileSize . " KB) found. Checked " .count($dependencies) . " files.";
+    $message = "No big files (>" . $maxFileSize . " KB) found. Checked " . count($dependencies) . " files.";
 }
 
 $bigFileEvent = new \Koalamon\Client\Reporter\Event('SiteInfo_BigFiles_' . $url, $system, $status, 'SiteInfoBigFile', $message, $bigFiles);
