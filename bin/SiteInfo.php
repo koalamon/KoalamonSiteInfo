@@ -46,7 +46,12 @@ $res = $guzzle->request('GET', $url);
 
 $koalamonReporter = new \Koalamon\Client\Reporter\Reporter('', $projectApiKey, $guzzle, $koalamonServer);
 
-$document = new \whm\Html\Document((string)$res->getBody());
+try {
+    $document = new \whm\Html\Document((string)$res->getBody());
+} catch (\Exception $e) {
+    echo "Error: " . $e->getMessage() . "\n\n";
+    exit(1);
+}
 
 $dependencies = $document->getDependencies(new \GuzzleHttp\Psr7\Uri($url), false);
 
