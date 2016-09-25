@@ -6,7 +6,7 @@ include_once __DIR__ . "/../vendor/autoload.php";
 
 if (count($argv) < 5) {
     echo "\n  SiteInfo - Version ##development##\n";
-    die("\n  Usage: SiteInfo.phar url system api_key options <koalamon_server>\n\n");
+    die("\n  Usage: SiteInfo.phar url system api_key options <koalamon_server> <component_id>\n\n");
 }
 
 $url = $argv[1];
@@ -41,6 +41,12 @@ if (array_key_exists(5, $argv)) {
     $koalamonServer = null;
 }
 
+if (array_key_exists(6, $argv)) {
+    $component_id = $argv[6];
+} else {
+    $component_id = null;
+}
+
 $guzzle = new \GuzzleHttp\Client();
 $res = $guzzle->request('GET', $url);
 
@@ -64,7 +70,6 @@ foreach ($dependencies as $dependency) {
     try {
         $response = $guzzle->request('GET', (string)$dependency);
         $responseSize = strlen($response->getBody());
-        $totalSize += $responseSize;
 
         $known = false;
         foreach ($knownBigFiles as $knownBigFile) {
@@ -75,6 +80,8 @@ foreach ($dependencies as $dependency) {
         }
 
         if (!$known) {
+            $totalSize += $responseSize;
+
             if ($responseSize > ($maxFileSize * 1024)) {
                 echo "\nBig file found: " . ((string)$dependency) . "\n";
                 $bigFileNames[] = ['file' => $dependency, 'size' => $responseSize];
@@ -97,7 +104,7 @@ if ($bigFiles > 0) {
     $message = "No big files (>" . $maxFileSize . " KB) found. Checked " . count($dependencies) . " files.";
 }
 
-$bigFileEvent = new \Koalamon\Client\Reporter\Event('SiteInfo_BigFiles_' . $url, $system, $status, 'SiteInfoBigFile', $message, $bigFiles);
+$bigFileEvent = new \Koalamon\Client\Reporter\Event('SiteInfo_BigFiles_' . $url, $system, $status, 'SiteInfoBigFile', $message, $bigFiles, '', $component_id);
 $koalamonReporter->sendEvent($bigFileEvent);
 
 $totalSizeInMb = round($totalSize / 1024 / 1024, 2);
@@ -109,5 +116,5 @@ if ($totalSizeInMb > $maxPageSize) {
 }
 $message = "Total size of the site " . $url . " is " . $totalSizeInMb . "MB.";
 
-$bigFileEvent = new \Koalamon\Client\Reporter\Event('SiteInfo_FileSize_' . $url, $system, $status, 'SiteInfoFileSize', $message, $totalSizeInMb);
+$bigFileEvent = new \Koalamon\Client\Reporter\Event('SiteInfo_FileSize_' . $url, $system, $status, 'SiteInfoFileSize', $message, $totalSizeInMb, '', $component_id);
 $koalamonReporter->sendEvent($bigFileEvent);
