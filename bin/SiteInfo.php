@@ -1,6 +1,7 @@
 <?php
 
 //  /usr/bin/php /var/tools/KoalaSiteInfo/SiteInfo.phar 'http://www.aboutyou.de/dein-profil' AY-Live 4B288DE3-A40F-4CA7-B18E-F49361A26AF2 '{"pageSize":"3","fileSize":"800","excludedFiles":{"89576813":{"filename":"http:\/\/www.aboutyou.de\/assets\/js\/theme-v3.min.js(.*)"},"28771459":{"filename":" http:\/\/www.aboutyou.de\/assets\/css\/theme-v3.css(.*)"}}}' http://status.leankoala.com/webhook/
+// 
 
 include_once __DIR__ . "/../vendor/autoload.php";
 
@@ -64,7 +65,7 @@ if (array_key_exists(6, $argv)) {
     $component_id = null;
 }
 
-if (array_key_exists(7, $argv)) {
+if (array_key_exists(7, $argv) && $argv[7]) {
     $cookieString = getCookieString($argv[7]);
 } else {
     $cookieString = "";
