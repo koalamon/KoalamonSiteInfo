@@ -1,7 +1,7 @@
 <?php
 
 //  /usr/bin/php /var/tools/KoalaSiteInfo/SiteInfo.phar 'http://www.aboutyou.de/dein-profil' AY-Live 4B288DE3-A40F-4CA7-B18E-F49361A26AF2 '{"pageSize":"3","fileSize":"800","excludedFiles":{"89576813":{"filename":"http:\/\/www.aboutyou.de\/assets\/js\/theme-v3.min.js(.*)"},"28771459":{"filename":" http:\/\/www.aboutyou.de\/assets\/css\/theme-v3.css(.*)"}}}' http://status.leankoala.com/webhook/
-// 
+//
 
 include_once __DIR__ . "/../vendor/autoload.php";
 
@@ -72,9 +72,18 @@ if (array_key_exists(7, $argv) && $argv[7]) {
 }
 
 $guzzle = new \GuzzleHttp\Client();
-$res = $guzzle->request('GET', $url, ['headers' => ['Cookie' => $cookieString]]);
-
 $koalamonReporter = new \Koalamon\Client\Reporter\Reporter('', $projectApiKey, $guzzle, $koalamonServer);
+
+try {
+    $res = $guzzle->request('GET', $url, ['headers' => ['Cookie' => $cookieString]]);
+} catch (\GuzzleHttp\Exception\ClientException $e) {
+    $res = $e->getResponse();
+} catch (\Exception $e) {
+    $message = "HTTP ERROR [" . $e->getCode() . "]: GET $url \n" . (string)$e->getMessage() . "\n\n";
+    $guzzleEventException = new \Koalamon\Client\Reporter\Event('SiteInfo_HttpException_' . $url, $system, \Koalamon\Client\Reporter\Event::STATUS_FAILURE, 'SiteInfoHttpException', $message, 0, '', $component_id);
+    $koalamonReporter->sendEvent($bigFileEvent);
+    exit(1);
+}
 
 try {
     $document = new \whm\Html\Document((string)$res->getBody());
