@@ -81,7 +81,7 @@ try {
 } catch (\Exception $e) {
     $message = "Unknown error occured, if this this error keeps occuring please contact our support. Error message:" . (string)$e->getMessage() . "\n\n";
     $guzzleEventException = new \Koalamon\Client\Reporter\Event('SiteInfo_HttpException_' . $url, $system, \Koalamon\Client\Reporter\Event::STATUS_FAILURE, 'SiteInfoHttpException', $message, 0, '', $component_id);
-    $koalamonReporter->sendEvent($bigFileEvent);
+    $koalamonReporter->sendEvent($guzzleEventException);
     exit(1);
 }
 
