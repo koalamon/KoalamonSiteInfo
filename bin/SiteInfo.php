@@ -5,23 +5,6 @@
 
 include_once __DIR__ . "/../vendor/autoload.php";
 
-function getCookieString($sessionSettings)
-{
-    $cookieMakerExec = 'CookieMaker';
-    $command = $cookieMakerExec . " '" . $sessionSettings . "'";
-    exec($command, $output, $result);
-
-    $cookies = json_decode($output[0]);
-
-    $cookieString = "";
-
-    foreach ($cookies as $key => $value) {
-        $cookieString .= $key . '=' . $value . '; ';
-    }
-
-    return $cookieString;
-}
-
 if (count($argv) < 5) {
     echo "\n  SiteInfo - Version ##development##\n";
     die("\n  Usage: SiteInfo.phar url system api_key options <koalamon_server> <component_id>\n\n");
@@ -66,7 +49,8 @@ if (array_key_exists(6, $argv)) {
 }
 
 if (array_key_exists(7, $argv) && $argv[7]) {
-    $cookieString = getCookieString($argv[7]);
+    $cookieMaker = new \Koalamon\CookieMakerHelper\CookieMaker('CookieMaker');
+    $cookieString = $cookieMaker->getCookieString($argv[7]);
 } else {
     $cookieString = "";
 }
