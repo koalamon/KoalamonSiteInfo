@@ -121,7 +121,7 @@ if ($bigFiles > 0) {
     $message = "No big files (>" . $maxFileSize . " KB) found. Checked " . count($dependencies) . " files.";
 }
 
-$bigFileEvent = new \Koalamon\Client\Reporter\Event('SiteInfo_BigFiles_' . $component_id, $system, $status, 'SiteInfoBigFile', $message, $bigFiles, '', $component_id);
+$bigFileEvent = new \Koalamon\Client\Reporter\Event('SiteInfo_BigFiles_' . $component_id, $system, $status, 'SiteInfoBigFile', $message, (int)$bigFiles, '', $component_id);
 $koalamonReporter->sendEvent($bigFileEvent);
 
 $totalSizeInMb = round($totalSize / 1024 / 1024, 2);
@@ -133,5 +133,5 @@ if ($totalSizeInMb > $maxPageSize) {
 }
 $message = "Total size of the site " . $url . " is " . $totalSizeInMb . "MB.";
 
-$bigFileEvent = new \Koalamon\Client\Reporter\Event('SiteInfo_FileSize_' . $component_id, $system, $status, 'SiteInfoFileSize', $message, $totalSizeInMb, '', $component_id);
+$bigFileEvent = new \Koalamon\Client\Reporter\Event('SiteInfo_FileSize_' . $component_id, $system, $status, 'SiteInfoFileSize', $message, (int)$totalSizeInMb, '', $component_id);
 $koalamonReporter->sendEvent($bigFileEvent);
