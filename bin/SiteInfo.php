@@ -133,5 +133,5 @@ if ($totalSizeInMb > $maxPageSize) {
 }
 $message = "Total size of the site " . $url . " is " . $totalSizeInMb . "MB.";
 
-$bigFileEvent = new \Koalamon\Client\Reporter\Event('SiteInfo_FileSize_' . $component_id, $system, $status, 'SiteInfoFileSize', $message, (int)$totalSizeInMb, '', $component_id);
+$bigFileEvent = new \Koalamon\Client\Reporter\Event('SiteInfo_FileSize_' . $component_id, $system, $status, 'SiteInfoFileSize', $message, (int)($totalSizeInMb * 1024), '', $component_id);
 $koalamonReporter->sendEvent($bigFileEvent);
