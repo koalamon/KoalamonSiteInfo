@@ -48,25 +48,30 @@ if (array_key_exists(6, $argv)) {
     $component_id = null;
 }
 
+$uri = new \whm\Html\Uri($url);
+
 if (array_key_exists(7, $argv) && $argv[7]) {
     $cookieMaker = new \Koalamon\CookieMakerHelper\CookieMaker('CookieMaker');
-    $cookieString = $cookieMaker->getCookieString($argv[7]);
-} else {
-    $cookieString = "";
+    $cookies = $cookieMaker->getCookies($argv[7]);
+    $uri->addCookies($cookies);
 }
 
 $guzzle = new \GuzzleHttp\Client();
 $koalamonReporter = new \Koalamon\Client\Reporter\Reporter('', $projectApiKey, $guzzle, $koalamonServer);
 
 try {
-    $res = $guzzle->request('GET', $url, ['headers' => ['Cookie' => $cookieString]]);
+    $client = new \phm\HttpWebdriverClient\Http\Client\Guzzle\GuzzleClient();
+    $request = new \GuzzleHttp\Psr7\Request('GET', $uri);
+
+    /** @var \Psr\Http\Message\ResponseInterface $res */
+    $res = $client->sendRequest($request);
 } catch (\GuzzleHttp\Exception\ClientException $e) {
-    $res = $e->getResponse();
+    $res = new \phm\HttpWebdriverClient\Http\Client\Guzzle\GuzzleResponse($e->getResponse());
 } catch (\Exception $e) {
     $message = "Unknown error occured, if this this error keeps occuring please contact our support. Error message:" . (string)$e->getMessage() . "\n\n";
     $guzzleEventException = new \Koalamon\Client\Reporter\Event('SiteInfo_BigFiles_' . $component_id, $system, \Koalamon\Client\Reporter\Event::STATUS_FAILURE, 'SiteInfoBigFile', $message, 0, '', $component_id);
     $koalamonReporter->sendEvent($guzzleEventException);
-    die();
+    exit(1);
 }
 
 try {
@@ -76,7 +81,7 @@ try {
     exit(1);
 }
 
-$dependencies = $document->getDependencies(new \GuzzleHttp\Psr7\Uri($url), false);
+$dependencies = $document->getDependencies($uri, false);
 
 $totalSize = 0;
 $bigFiles = 0;
@@ -85,8 +90,13 @@ $bigFileNames = [];
 
 foreach ($dependencies as $dependency) {
     try {
-        $response = $guzzle->request('GET', (string)$dependency, ['headers' => ['Cookie' => $cookieString]]);
-        $responseSize = strlen($response->getBody());
+        if ($uri->hasCookies()) {
+            $dependency->addCookies($uri->getCookies());
+        }
+        $depRequest = new \GuzzleHttp\Psr7\Request('GET', $dependency);
+        $response = $client->sendRequest($depRequest);
+
+        $responseSize = strlen($response->getPlainBody());
 
         $known = false;
         foreach ($knownBigFiles as $knownBigFile) {
