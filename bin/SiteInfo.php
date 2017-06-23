@@ -60,7 +60,10 @@ $guzzle = new \GuzzleHttp\Client();
 $koalamonReporter = new \Koalamon\Client\Reporter\Reporter('', $projectApiKey, $guzzle, $koalamonServer);
 
 try {
-    $client = new \phm\HttpWebdriverClient\Http\Client\Guzzle\GuzzleClient();
+    $client = new \phm\HttpWebdriverClient\Http\Client\Guzzle\GuzzleClient(
+        ['Accept-Encoding' => 'gzip', 'Connection' => 'keep-alive'],
+        30
+    );
     $request = new \GuzzleHttp\Psr7\Request('GET', $uri);
 
     /** @var \Psr\Http\Message\ResponseInterface $res */
