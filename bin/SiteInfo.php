@@ -74,7 +74,7 @@ try {
     $message = "Unknown error occured, if this this error keeps occuring please contact our support. Error message:" . (string)$e->getMessage() . "\n\n";
     $guzzleEventException = new \Koalamon\Client\Reporter\Event('SiteInfo_BigFiles_' . $component_id, $system, \Koalamon\Client\Reporter\Event::STATUS_FAILURE, 'SiteInfoBigFile', $message, 0, '', $component_id);
     $koalamonReporter->sendEvent($guzzleEventException);
-    exit(1);
+    exit(0);
 }
 
 try {
