@@ -2,6 +2,7 @@
   "require": {
     "koalamon/koalamonclient": "dev-master",
     "koalamon/cookiemakerhelper": "dev-master",
+    "koalamon/fallbackhelper": "dev-master",
     "guzzlehttp/guzzle": "~6.1.0",
     "phmlabs/html": "dev-master",
     "phmlabs/httpwebdriveradapter": "dev-master"

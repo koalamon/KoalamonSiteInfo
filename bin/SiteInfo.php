@@ -71,10 +71,17 @@ try {
 } catch (\GuzzleHttp\Exception\ClientException $e) {
     $res = new \phm\HttpWebdriverClient\Http\Client\Guzzle\GuzzleResponse($e->getResponse());
 } catch (\Exception $e) {
+
+    $fallbackHelper = new \Koalamon\FallbackHelper\FallbackHelper();
+
     $message = "Unknown error occured, if this this error keeps occuring please contact our support. Error message:" . (string)$e->getMessage() . "\n\n";
-    $guzzleEventException = new \Koalamon\Client\Reporter\Event('SiteInfo_BigFiles_' . $component_id, $system, \Koalamon\Client\Reporter\Event::STATUS_FAILURE, 'SiteInfoBigFile', $message, 0, '', $component_id);
-    $koalamonReporter->sendEvent($guzzleEventException);
-    exit(0);
+    if ($fallbackHelper->isFallbackServer()) {
+        $guzzleEventException = new \Koalamon\Client\Reporter\Event('SiteInfo_BigFiles_' . $component_id, $system, \Koalamon\Client\Reporter\Event::STATUS_FAILURE, 'SiteInfoBigFile', $message, 0, '', $component_id);
+        $koalamonReporter->sendEvent($guzzleEventException);
+        exit(0);
+    } else {
+        $fallbackHelper->doFallback($message);
+    }
 }
 
 try {
