@@ -110,7 +110,8 @@ foreach ($dependencies as $dependency) {
 
         $known = false;
         foreach ($knownBigFiles as $knownBigFile) {
-            if (preg_match("^" . $knownBigFile . "^", (string)$dependency) > 0) {
+            $pattern = "^" . $knownBigFile . "^";
+            if (preg_match($pattern, (string)$dependency) > 0) {
                 $known = true;
                 continue;
             }
