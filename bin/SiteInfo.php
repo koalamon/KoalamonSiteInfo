@@ -49,22 +49,26 @@ if (array_key_exists(6, $argv)) {
 }
 
 $uri = new \whm\Html\Uri($url);
+$request = new \phm\HttpWebdriverClient\Http\Request\BrowserRequest('GET', $uri, ['Accept-Encoding' => 'gzip', 'Connection' => 'keep-alive']);
 
 if (array_key_exists(7, $argv) && $argv[7]) {
     $cookieMaker = new \Koalamon\CookieMakerHelper\CookieMaker('CookieMaker');
     $cookies = $cookieMaker->getCookies($argv[7]);
-    $uri->addCookies($cookies);
+    $request = $request->withCookies($cookies);
 }
+
+if (array_key_exists(8, $argv) && $argv[8]) {
+    $device = \phm\HttpWebdriverClient\Http\Request\Device\DeviceFactory::create($argv[8]);
+} else {
+    $device = new \phm\HttpWebdriverClient\Http\Request\Device\DefaultDevice();
+}
+$request->setDevice($device);
 
 $guzzle = new \GuzzleHttp\Client();
 $koalamonReporter = new \Koalamon\Client\Reporter\Reporter('', $projectApiKey, $guzzle, $koalamonServer);
 
 try {
-    $client = new \phm\HttpWebdriverClient\Http\Client\Guzzle\GuzzleClient(
-        ['Accept-Encoding' => 'gzip', 'Connection' => 'keep-alive'],
-        30
-    );
-    $request = new \GuzzleHttp\Psr7\Request('GET', $uri);
+    $client = new \phm\HttpWebdriverClient\Http\Client\Guzzle\GuzzleClient([], 30);
 
     /** @var \Psr\Http\Message\ResponseInterface $res */
     $res = $client->sendRequest($request);
@@ -103,6 +107,7 @@ foreach ($dependencies as $dependency) {
         if ($uri->hasCookies()) {
             $dependency->addCookies($uri->getCookies());
         }
+
         $depRequest = new \GuzzleHttp\Psr7\Request('GET', $dependency);
         $response = $client->sendRequest($depRequest);
 
