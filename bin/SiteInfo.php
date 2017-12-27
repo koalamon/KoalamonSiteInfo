@@ -66,8 +66,6 @@ if (array_key_exists(8, $argv) && $argv[8]) {
 $guzzle = new \GuzzleHttp\Client();
 $koalamonReporter = new \Koalamon\Client\Reporter\Reporter('', $projectApiKey, $guzzle, $koalamonServer);
 
-var_dump($argv);
-
 try {
     $client = new \phm\HttpWebdriverClient\Http\Client\Guzzle\GuzzleClient([], 30);
 
