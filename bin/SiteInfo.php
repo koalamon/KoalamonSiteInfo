@@ -58,14 +58,15 @@ if (array_key_exists(7, $argv) && $argv[7]) {
 }
 
 if (array_key_exists(8, $argv) && $argv[8]) {
-    $device = \phm\HttpWebdriverClient\Http\Request\Device\DeviceFactory::create($argv[8]);
-} else {
-    $device = new \phm\HttpWebdriverClient\Http\Request\Device\DefaultDevice();
+    $factory = new \Leankoala\Devices\DeviceFactory();
+    $device = $factory->create($argv[8]);
+    $request->setDevice($device);
 }
-$request->setDevice($device);
 
 $guzzle = new \GuzzleHttp\Client();
 $koalamonReporter = new \Koalamon\Client\Reporter\Reporter('', $projectApiKey, $guzzle, $koalamonServer);
+
+var_dump($argv);
 
 try {
     $client = new \phm\HttpWebdriverClient\Http\Client\Guzzle\GuzzleClient([], 30);

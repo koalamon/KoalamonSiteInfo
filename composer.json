@@ -1,4 +1,6 @@
 {
+  "minimum-stability": "dev",
+  "prefer-stable": true,
   "require": {
     "koalamon/koalamonclient": "dev-master",
     "koalamon/cookiemakerhelper": "dev-master",
