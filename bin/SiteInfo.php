@@ -71,6 +71,7 @@ try {
 
     /** @var \Psr\Http\Message\ResponseInterface $res */
     $res = $client->sendRequest($request);
+
 } catch (\GuzzleHttp\Exception\ClientException $e) {
     $res = new \phm\HttpWebdriverClient\Http\Client\Guzzle\GuzzleResponse($e->getResponse());
 } catch (\Exception $e) {
